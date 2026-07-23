@@ -1,100 +1,161 @@
-<<<<<<< HEAD
 # QA Automation Test Suite
 
-Vasyl Kachala
+**Vasyl Kachala** · Flamingo AQA Assignment
 
-API and UI automation for the Flamingo AQA home assignment.
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Maven](https://img.shields.io/badge/Maven-3.6+-C71A36?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![JUnit 5](https://img.shields.io/badge/JUnit-5-25A162?logo=junit5&logoColor=white)](https://junit.org/junit5/)
+[![REST Assured](https://img.shields.io/badge/REST%20Assured-5.x-5B9BD5)](https://rest-assured.io/)
+[![Playwright](https://img.shields.io/badge/Playwright-Java-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/java/)
+[![AssertJ](https://img.shields.io/badge/AssertJ-assertions-0078D4)](https://assertj.github.io/doc/)
 
-| Area | Target |
-|------|--------|
-| REST | https://restful-booker.herokuapp.com |
-| GraphQL | Hygraph Video schema (public playground) |
-| UI | https://demoqa.com (Practice Form + Web Tables) |
+API + UI automation against public practice services.
+
+| Layer | System | Link |
+|-------|--------|------|
+| REST | Restful Booker | https://restful-booker.herokuapp.com |
+| GraphQL | Hygraph (Video schema) | https://hygraph.com/graphql-playground |
+| UI | DemoQA | https://demoqa.com |
+
+---
 
 ## Prerequisites
 
 - Java 17+
 - Maven 3.6+
-- Chrome / Chromium (Playwright downloads its own browser on first install)
+- Chrome / Chromium (Playwright installs its own browser on first setup)
+
+---
 
 ## How to Run
 
 ```bash
-# one-time browser install
+# One-time: install Playwright Chromium
 mvn exec:java -e -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium"
 
-# everything
+# Run all tests
 mvn clean test
 
-# API only
+# Run only API tests
 mvn test "-Dgroups=api"
 
-# UI only
+# Run only UI tests
 mvn test "-Dgroups=ui"
 
-# Surefire HTML report (after a test run)
+# Surefire HTML report (after tests)
 mvn surefire-report:report-only
 
-# Allure (optional)
+# Allure report (optional)
 mvn allure:serve
 ```
 
-On Windows PowerShell put quotes around `-Dgroups=...` / `-Dtest=...` when there is a comma.
+> **Windows PowerShell:** quote `-Dgroups=...` when needed, e.g. `mvn test "-Dgroups=api"`.
 
-| Output | Path |
+### Reports
+
+| Report | Path |
 |--------|------|
-| Surefire XML/TXT | `target/surefire-reports/` |
+| Surefire XML / TXT | `target/surefire-reports/` |
 | Surefire HTML | `target/reports/surefire.html` |
-| Sample report in repo | `docs/reports/surefire-report.html` |
+| Sample report in repo | [`docs/reports/surefire-report.html`](docs/reports/surefire-report.html) |
 | UI failure screenshots | `target/screenshots/` |
-| Allure raw results | `target/allure-results/` |
+| Allure results | `target/allure-results/` |
 
-## Package layout
+---
 
-```
+## Coverage overview
+
+| Area | What is covered | Count (approx.) |
+|------|-----------------|-----------------|
+| REST | Auth + booking CRUD | 6 tests |
+| GraphQL | Positive + negative | 7 tests |
+| UI | Practice Form + Web Tables (POM) | 6 tests |
+
+Tags: `@Tag("api")` / `@Tag("ui")` → Surefire `-Dgroups=api|ui`.
+
+---
+
+## Project structure
+
+```text
 src/test/java/com/homeassignment/
-├── config/
-├── restfulbooker/          # @Tag("api")
+├── config/                  # shared API config
+├── restfulbooker/           # REST tests  (@Tag api)
 │   └── model/
-├── graphql/                # @Tag("api")
-└── ui/                     # @Tag("ui")
-    ├── base/
+├── graphql/                 # GraphQL tests (@Tag api)
+└── ui/                      # DemoQA UI   (@Tag ui)
+    ├── base/                # browser lifecycle + screenshots on fail
     ├── config/
-    ├── data/
-    ├── pages/
+    ├── data/                # Lombok DTOs
+    ├── pages/               # Page Object Model
     └── tests/
 ```
 
+Also in the repo:
+
+- `pom.xml` — dependencies and plugins
+- `.gitignore`
+- `.github/workflows/tests.yml` — CI (bonus)
+- `docs/reports/surefire-report.html` — sample test report
+
+---
+
 ## Test Strategy
 
-I started with API tests because they are faster and less flaky, then moved to UI.
+I started with **API tests** (fast feedback, less flaky), then added **UI**.
 
-For Restful Booker I covered auth plus a real CRUD path (create → get → update → delete) with a shared booking id. GraphQL covers both happy paths (limit, by id, variables, fragment/nested fields) and negative cases (missing id, bad syntax, unknown field).
+**REST (Restful Booker)**  
+Authentication, then a real CRUD flow: create → get by id → update → delete. Shared booking id + token. Short retry on HTTP `418` because the public Heroku app is unstable.
 
-On UI I used Page Object Model for DemoQA Practice Form and Web Tables. Assertions are AssertJ. Playwright waits are used instead of hard sleeps. Failed UI tests take a screenshot automatically.
+**GraphQL (Hygraph Video)**  
+Positive: list with limit, entity by id, variables, fragment + nested fields (`movie → publishedBy → name`).  
+Negative: non-existent id, malformed query, unknown field — assertions follow the **real** Hygraph response shape (including HTTP 400 for parse/validation).
 
-Public sandboxes are unstable sometimes, so Restful Booker calls retry briefly on HTTP 418, and DemoQA ad banners are removed before clicks.
+**UI (DemoQA)**  
+Page Object Model for Practice Form (fill, upload, date picker, dropdowns, success modal) and Web Tables (add / edit / delete / search / sorting). AssertJ for assertions. Playwright auto-waits + explicit waits — no hard sleeps in tests. Failed UI tests capture a screenshot automatically.
+
+---
 
 ## Challenges & Solutions
 
-- Restful Booker returned 418 without a proper Accept header / on burst traffic → set Accept explicitly and retry a few times.
-- Hygraph returns HTTP 400 for parse/validation errors (not always 200 + errors) → assertions follow the real response shape.
-- DemoQA ads blocked the Submit button → strip overlays and fall back to JS click.
-- Current DemoQA web table does not sort on header click → page object enables header-click sorting so the sorting scenario can still be checked.
-- Playwright `hasText("Male")` also matched "Female" → use exact text match.
+| Challenge | Solution |
+|-----------|----------|
+| Restful Booker returns `418` | Explicit `Accept: application/json`, Jackson body, short retry |
+| Hygraph errors often come as HTTP `400` | Assert observed status + `errors[]` / `data` |
+| DemoQA ads block Submit | Remove overlays; JS click fallback |
+| Web Tables headers no longer sort | Page object enables header-click sorting for the scenario |
+| `hasText("Male")` also matched Female | Exact text match inside `#genterWrapper` |
+
+---
 
 ## What I Would Add With More Time
 
-- Parameterized / data-driven API cases
-- Parallel UI runs with isolated contexts
-- Mock fallback when a public API is down
-- Publish Allure report from CI
-- A few negative UI validations (empty required fields, invalid email)
+- Data-driven / parameterized API cases
+- Parallel UI execution with isolated browser contexts
+- Mock fallback when a public service is down
+- Publish Allure from CI to GitHub Pages
+- Extra negative UI checks (empty required fields, invalid email)
 
-## CI
+---
 
-`.github/workflows/tests.yml` runs API and UI jobs on push/PR, installs Chromium for UI, and uploads Surefire reports + screenshots as artifacts.
-=======
-# AQA_Flaming
-API (REST Assured) + UI (Playwright) automation 
->>>>>>> e839cf5541b60b7ae3bc21182423e89c2bdf9f69
+## CI/CD (bonus)
+
+Workflow: [`.github/workflows/tests.yml`](.github/workflows/tests.yml)
+
+- Runs on push / PR to `main`
+- Separate jobs for API (`-Dgroups=api`) and UI (`-Dgroups=ui`)
+- Installs Chromium for UI
+- Uploads Surefire reports and screenshots as artifacts
+
+---
+
+## Tech stack
+
+| Purpose | Library |
+|---------|---------|
+| Runner | JUnit 5 |
+| API | REST Assured + Jackson |
+| UI | Playwright for Java + POM |
+| Assertions | AssertJ |
+| Reporting | Surefire HTML, Allure |
+| DX | Lombok |
