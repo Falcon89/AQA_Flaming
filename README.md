@@ -2,6 +2,7 @@
 
 **Vasyl Kachala** · Flamingo AQA Assignment
 
+[![CI](https://github.com/Falcon89/AQA_Flaming/actions/workflows/tests.yml/badge.svg)](https://github.com/Falcon89/AQA_Flaming/actions/workflows/tests.yml)
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.6+-C71A36?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
 [![JUnit 5](https://img.shields.io/badge/JUnit-5-25A162?logo=junit5&logoColor=white)](https://junit.org/junit5/)
@@ -196,12 +197,27 @@ python -m http.server 8080
 
 ## CI/CD (bonus)
 
-Workflow: [`.github/workflows/tests.yml`](.github/workflows/tests.yml)
+Workflow file: [`.github/workflows/tests.yml`](.github/workflows/tests.yml)
 
-- Runs on push / PR to `main`
-- Separate jobs for API (`-Dgroups=api`) and UI (`-Dgroups=ui`)
-- Installs Chromium for UI
-- Builds Surefire + Allure reports and uploads them as artifacts
+| Trigger | When |
+|---------|------|
+| `push` | commits to `main` |
+| `pull_request` | PRs into `main` |
+| `workflow_dispatch` | manual run from Actions tab |
+
+**Jobs**
+
+1. **API tests** — `mvn test -Dgroups=api` → Surefire + Allure artifacts  
+2. **UI tests** — install Chromium → `mvn test -Dgroups=ui` → Surefire + Allure + screenshots  
+
+**How to run manually on GitHub**
+
+1. Open https://github.com/Falcon89/AQA_Flaming/actions  
+2. Select **QA Automation Tests**  
+3. Click **Run workflow** → **Run workflow**  
+4. After finish: open the run → **Artifacts** → download `api-reports` / `ui-reports`
+
+If Actions are disabled: **Settings → Actions → General → Allow all actions**.
 
 ---
 
