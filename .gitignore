@@ -7,9 +7,19 @@ target/
 .vscode/
 *.log
 .DS_Store
-allure-results/
-allure-report/
-test-results/
-playwright/
 .env
 *.class
+
+# Allure (generated / downloaded — do not commit)
+.allure/
+allure-results/
+allure-report/
+**/allure-results/
+**/allure-report/
+
+# accidental copies in project root (real ones live in src/test/resources)
+/categories.json
+/environment.properties
+
+test-results/
+playwright/
