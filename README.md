@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # QA Automation Test Suite
 
 Vasyl Kachala
@@ -93,3 +94,7 @@ Public sandboxes are unstable sometimes, so Restful Booker calls retry briefly o
 ## CI
 
 `.github/workflows/tests.yml` runs API and UI jobs on push/PR, installs Chromium for UI, and uploads Surefire reports + screenshots as artifacts.
+=======
+# AQA_Flaming
+API (REST Assured) + UI (Playwright) automation 
+>>>>>>> e839cf5541b60b7ae3bc21182423e89c2bdf9f69
