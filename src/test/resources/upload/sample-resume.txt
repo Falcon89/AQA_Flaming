@@ -1,0 +1,2 @@
+DemoQA UI automation sample resume file.
+Used for Practice Form picture upload.
