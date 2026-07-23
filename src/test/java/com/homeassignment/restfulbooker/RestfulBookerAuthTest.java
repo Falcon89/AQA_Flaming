@@ -2,6 +2,9 @@ package com.homeassignment.restfulbooker;
 
 import com.homeassignment.config.ApiConfig;
 import com.homeassignment.restfulbooker.model.AuthRequest;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +16,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("api")
+@Epic("Restful Booker API")
+@Feature("Authentication")
 @DisplayName("Restful Booker - Authentication")
 class RestfulBookerAuthTest {
 
@@ -25,6 +30,7 @@ class RestfulBookerAuthTest {
     }
 
     @Test
+    @Story("Valid credentials")
     @DisplayName("POST /auth returns a non-empty token for valid credentials")
     void shouldAuthenticateAndReturnToken() {
         Response response = given()
@@ -40,6 +46,7 @@ class RestfulBookerAuthTest {
     }
 
     @Test
+    @Story("Invalid credentials")
     @DisplayName("POST /auth fails for invalid credentials")
     void shouldRejectInvalidCredentials() {
         Response response = given()

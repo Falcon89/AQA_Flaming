@@ -1,6 +1,9 @@
 package com.homeassignment.graphql;
 
 import com.homeassignment.config.ApiConfig;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +17,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("api")
+@Epic("Hygraph GraphQL")
+@Feature("Negative scenarios")
 @DisplayName("Hygraph GraphQL - Negative (Video schema)")
 class GraphQlNegativeTest {
 
@@ -28,6 +33,7 @@ class GraphQlNegativeTest {
     }
 
     @Test
+    @Story("Invalid ID")
     @DisplayName("Invalid ID returns HTTP 200 with data.movie = null (no errors)")
     void shouldReturnNullDataForNonExistentId() {
         // Observed Hygraph behavior: HTTP 200 + data.movie = null (not errors[])
@@ -50,6 +56,7 @@ class GraphQlNegativeTest {
     }
 
     @Test
+    @Story("Malformed query")
     @DisplayName("Malformed query returns errors[].message and data = null")
     void shouldReturnParseErrorForMalformedQuery() {
         // Observed Hygraph behavior: HTTP 400 for parse errors
@@ -68,6 +75,7 @@ class GraphQlNegativeTest {
     }
 
     @Test
+    @Story("Unknown field")
     @DisplayName("Non-existent field returns a validation error")
     void shouldReturnValidationErrorForUnknownField() {
         // Observed Hygraph behavior: HTTP 400 + data = null + errors[]

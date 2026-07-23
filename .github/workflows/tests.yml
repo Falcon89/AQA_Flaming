@@ -29,18 +29,22 @@ jobs:
       - name: Run API tests
         run: mvn -B test -Dgroups=api
 
-      - name: Generate Surefire HTML report
+      - name: Generate reports
         if: always()
-        run: mvn -B surefire-report:report-only
+        run: |
+          mvn -B surefire-report:report-only
+          mvn -B io.qameta.allure:allure-maven:2.15.0:report
 
-      - name: Upload API Surefire reports
+      - name: Upload API reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-surefire-reports
+          name: api-reports
           path: |
             target/surefire-reports/
             target/reports/surefire.html
+            target/allure-results/
+            target/allure-report/
           if-no-files-found: ignore
 
   ui-tests:
@@ -63,18 +67,21 @@ jobs:
       - name: Run UI tests
         run: mvn -B test -Dgroups=ui
 
-      - name: Generate Surefire HTML report
+      - name: Generate reports
         if: always()
-        run: mvn -B surefire-report:report-only
+        run: |
+          mvn -B surefire-report:report-only
+          mvn -B io.qameta.allure:allure-maven:2.15.0:report
 
-      - name: Upload UI reports and screenshots
+      - name: Upload UI reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-surefire-reports
+          name: ui-reports
           path: |
             target/surefire-reports/
             target/reports/surefire.html
             target/screenshots/
             target/allure-results/
+            target/allure-report/
           if-no-files-found: ignore

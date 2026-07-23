@@ -4,6 +4,9 @@ import com.homeassignment.config.ApiConfig;
 import com.homeassignment.restfulbooker.model.AuthRequest;
 import com.homeassignment.restfulbooker.model.Booking;
 import com.homeassignment.restfulbooker.model.BookingDates;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("api")
+@Epic("Restful Booker API")
+@Feature("Booking CRUD")
 @DisplayName("Restful Booker - Booking CRUD")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RestfulBookerCrudTest {
@@ -66,6 +71,7 @@ class RestfulBookerCrudTest {
 
     @Test
     @Order(1)
+    @Story("Create")
     @DisplayName("Create a new booking (POST /booking)")
     void createBooking() {
         Response response = postWithRetry("/booking", ApiConfig.toJson(INITIAL_BOOKING));
@@ -90,6 +96,7 @@ class RestfulBookerCrudTest {
 
     @Test
     @Order(2)
+    @Story("Read")
     @DisplayName("Retrieve the booking by ID (GET /booking/{id})")
     void retrieveBookingById() {
         assumeTrue(bookingId != null && bookingId > 0, "Booking was not created");
@@ -116,6 +123,7 @@ class RestfulBookerCrudTest {
 
     @Test
     @Order(3)
+    @Story("Update")
     @DisplayName("Update the booking (PUT /booking/{id})")
     void updateBooking() {
         assumeTrue(bookingId != null && bookingId > 0, "Booking was not created");
@@ -139,6 +147,7 @@ class RestfulBookerCrudTest {
 
     @Test
     @Order(4)
+    @Story("Delete")
     @DisplayName("Delete the booking (DELETE /booking/{id})")
     void deleteBooking() {
         assumeTrue(bookingId != null && bookingId > 0, "Booking was not created");

@@ -1,6 +1,9 @@
 package com.homeassignment.graphql;
 
 import com.homeassignment.config.ApiConfig;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +18,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("api")
+@Epic("Hygraph GraphQL")
+@Feature("Positive scenarios")
 @DisplayName("Hygraph GraphQL - Positive (Video schema)")
 class GraphQlPositiveTest {
 
@@ -46,6 +51,7 @@ class GraphQlPositiveTest {
     }
 
     @Test
+    @Story("Pagination / limit")
     @DisplayName("Query a list with pagination/limit")
     void shouldQueryMoviesWithLimit() {
         Response response = given()
@@ -73,6 +79,7 @@ class GraphQlPositiveTest {
     }
 
     @Test
+    @Story("Query by ID")
     @DisplayName("Query a single entity by ID")
     void shouldQuerySingleMovieById() {
         Response response = given()
@@ -95,6 +102,7 @@ class GraphQlPositiveTest {
     }
 
     @Test
+    @Story("GraphQL variables")
     @DisplayName("Query using GraphQL variables (not string interpolation)")
     void shouldQueryUsingVariables() {
         Response response = given()
@@ -118,6 +126,7 @@ class GraphQlPositiveTest {
     }
 
     @Test
+    @Story("Fragment and nested fields")
     @DisplayName("Query with fragment and nested fields (movie → publishedBy → name)")
     void shouldQueryWithFragmentAndNestedFields() {
         Response response = given()

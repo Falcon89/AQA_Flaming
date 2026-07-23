@@ -2,6 +2,7 @@ package com.homeassignment.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -33,6 +34,7 @@ public final class ApiConfig {
                 .setContentType(ContentType.JSON)
                 .addHeader("Accept", "application/json")
                 .addHeader("User-Agent", "HomeAssignment-API-Tests/1.0")
+                .addFilter(new AllureRestAssured())
                 .log(LogDetail.METHOD)
                 .log(LogDetail.URI)
                 .build();
@@ -43,6 +45,7 @@ public final class ApiConfig {
                 .setBaseUri(GRAPHQL_ENDPOINT)
                 .setContentType(ContentType.JSON)
                 .addHeader("Accept", "application/json")
+                .addFilter(new AllureRestAssured())
                 .log(LogDetail.METHOD)
                 .log(LogDetail.URI)
                 .build();
