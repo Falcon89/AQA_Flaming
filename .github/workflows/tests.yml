@@ -1,0 +1,80 @@
+name: QA Automation Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run API tests
+        run: mvn -B test -Dgroups=api
+
+      - name: Generate Surefire HTML report
+        if: always()
+        run: mvn -B surefire-report:report-only
+
+      - name: Upload API Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-surefire-reports
+          path: |
+            target/surefire-reports/
+            target/reports/surefire.html
+          if-no-files-found: ignore
+
+  ui-tests:
+    name: UI tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Install Playwright Chromium
+        run: mvn -B exec:java -Dexec.classpathScope=test -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+
+      - name: Run UI tests
+        run: mvn -B test -Dgroups=ui
+
+      - name: Generate Surefire HTML report
+        if: always()
+        run: mvn -B surefire-report:report-only
+
+      - name: Upload UI reports and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-surefire-reports
+          path: |
+            target/surefire-reports/
+            target/reports/surefire.html
+            target/screenshots/
+            target/allure-results/
+          if-no-files-found: ignore
